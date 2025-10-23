@@ -6,7 +6,9 @@ import { SizeSelection } from "@/components/kiosk/SizeSelection";
 import { ItemSelection } from "@/components/kiosk/ItemSelection";
 import { DrinkSelection } from "@/components/kiosk/DrinkSelection";
 import { OrderSummary } from "@/components/kiosk/OrderSummary";
+import { PaymentScreen } from "@/components/kiosk/PaymentScreen";
 import { ConfirmationScreen } from "@/components/kiosk/ConfirmationScreen";
+import { OrderDisplay } from "@/components/kiosk/OrderDisplay";
 import { SIDES, ENTREES, MEAL_CONFIGS } from "@/data/menu";
 import { MealType, AlaCarteSize, Side, Entree, Drink } from "@/types/order";
 
@@ -17,12 +19,13 @@ type Step =
   | "sides" 
   | "entrees" 
   | "drinks" 
-  | "summary" 
+  | "summary"
+  | "payment"
   | "confirmation";
 
 const KioskFlow = () => {
   const [step, setStep] = useState<Step>("welcome");
-  const { currentItem, setCurrentItem, addMealToOrder, addDrinkToOrder, order, clearOrder } = useOrder();
+  const { currentItem, setCurrentItem, addMealToOrder, addDrinkToOrder, removeItem, order, clearOrder } = useOrder();
 
   const handleMealTypeSelect = (mealType: MealType) => {
     setCurrentItem({ type: "meal", mealType, sides: [], entrees: [] });
@@ -72,7 +75,15 @@ const KioskFlow = () => {
   };
 
   const handleCheckout = () => {
+    setStep("payment");
+  };
+
+  const handlePaymentComplete = () => {
     setStep("confirmation");
+  };
+
+  const handleBackToSummary = () => {
+    setStep("summary");
   };
 
   const handleNewOrder = () => {
@@ -85,11 +96,18 @@ const KioskFlow = () => {
     return MEAL_CONFIGS[currentItem.mealType];
   };
 
+  const showOrderDisplay = step !== "welcome" && step !== "confirmation";
+
   return (
-    <>
+    <div className="relative">
       {step === "welcome" && <WelcomeScreen onStart={() => setStep("mealType")} />}
       
-      {step === "mealType" && <MealTypeSelection onSelect={handleMealTypeSelect} />}
+      {step === "mealType" && (
+        <MealTypeSelection 
+          onSelect={handleMealTypeSelect} 
+          onSelectDrinks={() => setStep("drinks")}
+        />
+      )}
       
       {step === "size" && <SizeSelection onSelect={handleSizeSelect} />}
       
@@ -115,7 +133,7 @@ const KioskFlow = () => {
         />
       )}
       
-      {step === "drinks" && <DrinkSelection onSelect={handleDrinkSelect} onBack={() => setStep("summary")} />}
+      {step === "drinks" && <DrinkSelection onSelect={handleDrinkSelect} onBack={() => setStep("mealType")} />}
       
       {step === "summary" && (
         <OrderSummary
@@ -125,9 +143,22 @@ const KioskFlow = () => {
           onCheckout={handleCheckout}
         />
       )}
+
+      {step === "payment" && (
+        <PaymentScreen 
+          onComplete={handlePaymentComplete}
+          onBack={handleBackToSummary}
+        />
+      )}
       
       {step === "confirmation" && <ConfirmationScreen onNewOrder={handleNewOrder} />}
-    </>
+
+      {showOrderDisplay && (
+        <div className="fixed top-8 right-8 w-96 z-50">
+          <OrderDisplay order={order} onRemoveItem={removeItem} />
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -7,6 +7,7 @@ interface OrderContextType {
   setCurrentItem: (item: Partial<MealOrderItem> | null) => void;
   addMealToOrder: () => void;
   addDrinkToOrder: (drink: Drink) => void;
+  removeItem: (index: number) => void;
   clearOrder: () => void;
 }
 
@@ -47,6 +48,13 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
     }));
   };
 
+  const removeItem = (index: number) => {
+    setOrder(prev => ({
+      items: prev.items.filter((_, i) => i !== index),
+      totalPrice: prev.totalPrice,
+    }));
+  };
+
   const clearOrder = () => {
     setOrder({ items: [], totalPrice: 0 });
     setCurrentItem(null);
@@ -54,7 +62,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <OrderContext.Provider
-      value={{ currentItem, order, setCurrentItem, addMealToOrder, addDrinkToOrder, clearOrder }}
+      value={{ currentItem, order, setCurrentItem, addMealToOrder, addDrinkToOrder, removeItem, clearOrder }}
     >
       {children}
     </OrderContext.Provider>

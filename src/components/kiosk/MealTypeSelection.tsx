@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MealType } from "@/types/order";
 
 interface MealTypeSelectionProps {
   onSelect: (mealType: MealType) => void;
+  onSelectDrinks: () => void;
 }
 
 const mealTypes = [
@@ -33,7 +33,7 @@ const mealTypes = [
   },
 ];
 
-export const MealTypeSelection = ({ onSelect }: MealTypeSelectionProps) => {
+export const MealTypeSelection = ({ onSelect, onSelectDrinks }: MealTypeSelectionProps) => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-6xl mx-auto">
@@ -41,7 +41,7 @@ export const MealTypeSelection = ({ onSelect }: MealTypeSelectionProps) => {
           Choose Your Meal
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mealTypes.map((meal) => (
             <Card
               key={meal.type}
@@ -59,6 +59,21 @@ export const MealTypeSelection = ({ onSelect }: MealTypeSelectionProps) => {
               </p>
             </Card>
           ))}
+          
+          <Card
+            className="p-8 hover:shadow-glow transition-all cursor-pointer border-2 bg-accent/20"
+            onClick={onSelectDrinks}
+          >
+            <h3 className="text-3xl font-bold mb-3 text-foreground">
+              Drinks Only
+            </h3>
+            <p className="text-xl mb-2 text-primary font-semibold">
+              Add a drink to your order
+            </p>
+            <p className="text-muted-foreground text-lg">
+              Fountain or bottled water
+            </p>
+          </Card>
         </div>
       </div>
     </div>
