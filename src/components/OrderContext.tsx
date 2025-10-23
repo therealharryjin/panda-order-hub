@@ -1,28 +1,29 @@
 import React, { createContext, useContext, useState } from "react";
-import { OrderItem, Order } from "@/types/order";
+import { OrderItem, MealOrderItem, DrinkOrderItem, Order, Drink } from "@/types/order";
 
 interface OrderContextType {
-  currentItem: Partial<OrderItem> | null;
+  currentItem: Partial<MealOrderItem> | null;
   order: Order;
-  setCurrentItem: (item: Partial<OrderItem> | null) => void;
-  addItemToOrder: () => void;
+  setCurrentItem: (item: Partial<MealOrderItem> | null) => void;
+  addMealToOrder: () => void;
+  addDrinkToOrder: (drink: Drink) => void;
   clearOrder: () => void;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentItem, setCurrentItem] = useState<Partial<OrderItem> | null>(null);
+  const [currentItem, setCurrentItem] = useState<Partial<MealOrderItem> | null>(null);
   const [order, setOrder] = useState<Order>({ items: [], totalPrice: 0 });
 
-  const addItemToOrder = () => {
+  const addMealToOrder = () => {
     if (currentItem && currentItem.mealType) {
-      const newItem: OrderItem = {
+      const newItem: MealOrderItem = {
+        type: "meal",
         mealType: currentItem.mealType,
         alacarteSize: currentItem.alacarteSize,
         sides: currentItem.sides || [],
         entrees: currentItem.entrees || [],
-        drink: currentItem.drink,
       };
       
       setOrder(prev => ({
@@ -34,6 +35,18 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const addDrinkToOrder = (drink: Drink) => {
+    const newItem: DrinkOrderItem = {
+      type: "drink",
+      drink,
+    };
+    
+    setOrder(prev => ({
+      items: [...prev.items, newItem],
+      totalPrice: prev.totalPrice,
+    }));
+  };
+
   const clearOrder = () => {
     setOrder({ items: [], totalPrice: 0 });
     setCurrentItem(null);
@@ -41,7 +54,7 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <OrderContext.Provider
-      value={{ currentItem, order, setCurrentItem, addItemToOrder, clearOrder }}
+      value={{ currentItem, order, setCurrentItem, addMealToOrder, addDrinkToOrder, clearOrder }}
     >
       {children}
     </OrderContext.Provider>

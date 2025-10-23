@@ -11,13 +11,20 @@ export interface Side extends MenuItem {}
 export interface Entree extends MenuItem {}
 export interface Drink extends MenuItem {}
 
-export interface OrderItem {
+export interface MealOrderItem {
+  type: "meal";
   mealType: MealType;
   alacarteSize?: AlaCarteSize;
   sides: Side[];
   entrees: Entree[];
-  drink?: Drink;
 }
+
+export interface DrinkOrderItem {
+  type: "drink";
+  drink: Drink;
+}
+
+export type OrderItem = MealOrderItem | DrinkOrderItem;
 
 export interface Order {
   items: OrderItem[];

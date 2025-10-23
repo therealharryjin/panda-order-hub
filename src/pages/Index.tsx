@@ -22,10 +22,10 @@ type Step =
 
 const KioskFlow = () => {
   const [step, setStep] = useState<Step>("welcome");
-  const { currentItem, setCurrentItem, addItemToOrder, order, clearOrder } = useOrder();
+  const { currentItem, setCurrentItem, addMealToOrder, addDrinkToOrder, order, clearOrder } = useOrder();
 
   const handleMealTypeSelect = (mealType: MealType) => {
-    setCurrentItem({ mealType, sides: [], entrees: [] });
+    setCurrentItem({ type: "meal", mealType, sides: [], entrees: [] });
     
     if (mealType === "alacarte") {
       setStep("size");
@@ -54,17 +54,21 @@ const KioskFlow = () => {
   };
 
   const handleEntreesContinue = () => {
-    setStep("drinks");
-  };
-
-  const handleDrinkSelect = (drink?: Drink) => {
-    setCurrentItem({ ...currentItem, drink });
-    addItemToOrder();
+    addMealToOrder();
     setStep("summary");
   };
 
-  const handleAddAnother = () => {
+  const handleDrinkSelect = (drink: Drink) => {
+    addDrinkToOrder(drink);
+    setStep("summary");
+  };
+
+  const handleAddMeal = () => {
     setStep("mealType");
+  };
+
+  const handleAddDrink = () => {
+    setStep("drinks");
   };
 
   const handleCheckout = () => {
@@ -111,12 +115,13 @@ const KioskFlow = () => {
         />
       )}
       
-      {step === "drinks" && <DrinkSelection onSelect={handleDrinkSelect} />}
+      {step === "drinks" && <DrinkSelection onSelect={handleDrinkSelect} onBack={() => setStep("summary")} />}
       
       {step === "summary" && (
         <OrderSummary
           order={order}
-          onAddAnother={handleAddAnother}
+          onAddMeal={handleAddMeal}
+          onAddDrink={handleAddDrink}
           onCheckout={handleCheckout}
         />
       )}
