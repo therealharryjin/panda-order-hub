@@ -58,20 +58,12 @@ const KioskFlow = () => {
 
   const handleEntreesContinue = () => {
     addMealToOrder();
-    setStep("summary");
+    setStep("mealType");
   };
 
   const handleDrinkSelect = (drink: Drink) => {
     addDrinkToOrder(drink);
-    setStep("summary");
-  };
-
-  const handleAddMeal = () => {
     setStep("mealType");
-  };
-
-  const handleAddDrink = () => {
-    setStep("drinks");
   };
 
   const handleCheckout = () => {
@@ -96,66 +88,59 @@ const KioskFlow = () => {
     return MEAL_CONFIGS[currentItem.mealType];
   };
 
-  const showOrderDisplay = step !== "welcome" && step !== "confirmation";
+  const showOrderDisplay = step !== "welcome" && step !== "confirmation" && step !== "payment";
 
   return (
-    <div className="relative">
-      {step === "welcome" && <WelcomeScreen onStart={() => setStep("mealType")} />}
-      
-      {step === "mealType" && (
-        <MealTypeSelection 
-          onSelect={handleMealTypeSelect} 
-          onSelectDrinks={() => setStep("drinks")}
-        />
-      )}
-      
-      {step === "size" && <SizeSelection onSelect={handleSizeSelect} />}
-      
-      {step === "sides" && (
-        <ItemSelection
-          title="Choose Your Side"
-          items={SIDES}
-          maxSelection={getMealConfig().sides}
-          selectedItems={currentItem?.sides || []}
-          onSelect={handleSidesSelect}
-          onContinue={handleSidesContinue}
-        />
-      )}
-      
-      {step === "entrees" && (
-        <ItemSelection
-          title={getMealConfig().entrees > 1 ? "Choose Your Entrees" : "Choose Your Entree"}
-          items={ENTREES}
-          maxSelection={getMealConfig().entrees}
-          selectedItems={currentItem?.entrees || []}
-          onSelect={handleEntreesSelect}
-          onContinue={handleEntreesContinue}
-        />
-      )}
-      
-      {step === "drinks" && <DrinkSelection onSelect={handleDrinkSelect} onBack={() => setStep("mealType")} />}
-      
-      {step === "summary" && (
-        <OrderSummary
-          order={order}
-          onAddMeal={handleAddMeal}
-          onAddDrink={handleAddDrink}
-          onCheckout={handleCheckout}
-        />
-      )}
+    <div className="flex min-h-screen">
+      <div className="flex-1">
+        {step === "welcome" && <WelcomeScreen onStart={() => setStep("mealType")} />}
+        
+        {step === "mealType" && (
+          <MealTypeSelection 
+            onSelect={handleMealTypeSelect} 
+            onSelectDrinks={() => setStep("drinks")}
+          />
+        )}
+        
+        {step === "size" && <SizeSelection onSelect={handleSizeSelect} />}
+        
+        {step === "sides" && (
+          <ItemSelection
+            title="Choose Your Side"
+            items={SIDES}
+            maxSelection={getMealConfig().sides}
+            selectedItems={currentItem?.sides || []}
+            onSelect={handleSidesSelect}
+            onContinue={handleSidesContinue}
+          />
+        )}
+        
+        {step === "entrees" && (
+          <ItemSelection
+            title={getMealConfig().entrees > 1 ? "Choose Your Entrees" : "Choose Your Entree"}
+            items={ENTREES}
+            maxSelection={getMealConfig().entrees}
+            selectedItems={currentItem?.entrees || []}
+            onSelect={handleEntreesSelect}
+            onContinue={handleEntreesContinue}
+          />
+        )}
+        
+        {step === "drinks" && <DrinkSelection onSelect={handleDrinkSelect} onBack={() => setStep("mealType")} />}
 
-      {step === "payment" && (
-        <PaymentScreen 
-          onComplete={handlePaymentComplete}
-          onBack={handleBackToSummary}
-        />
-      )}
-      
-      {step === "confirmation" && <ConfirmationScreen onNewOrder={handleNewOrder} />}
+        {step === "payment" && (
+          <PaymentScreen 
+            onComplete={handlePaymentComplete}
+            onBack={() => setStep("mealType")}
+          />
+        )}
+        
+        {step === "confirmation" && <ConfirmationScreen onNewOrder={handleNewOrder} />}
+      </div>
 
       {showOrderDisplay && (
-        <div className="fixed top-8 right-8 w-96 z-50">
-          <OrderDisplay order={order} onRemoveItem={removeItem} />
+        <div className="w-96 border-l bg-card/50 backdrop-blur p-6 overflow-y-auto">
+          <OrderDisplay order={order} onRemoveItem={removeItem} onCheckout={handleCheckout} />
         </div>
       )}
     </div>

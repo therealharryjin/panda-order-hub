@@ -61,7 +61,7 @@ export const MealTypeSelection = ({ onSelect, onSelectDrinks }: MealTypeSelectio
           ))}
           
           <Card
-            className="p-8 hover:shadow-glow transition-all cursor-pointer border-2 bg-accent/20"
+            className="p-8 hover:shadow-glow transition-all cursor-pointer border-2"
             onClick={onSelectDrinks}
           >
             <h3 className="text-3xl font-bold mb-3 text-foreground">

@@ -7,6 +7,7 @@ import { Order } from "@/types/order";
 interface OrderDisplayProps {
   order: Order;
   onRemoveItem: (index: number) => void;
+  onCheckout: () => void;
 }
 
 const getMealTypeLabel = (mealType: string, alacarteSize?: string) => {
@@ -19,10 +20,10 @@ const getMealTypeLabel = (mealType: string, alacarteSize?: string) => {
   return mealType;
 };
 
-export const OrderDisplay = ({ order, onRemoveItem }: OrderDisplayProps) => {
+export const OrderDisplay = ({ order, onRemoveItem, onCheckout }: OrderDisplayProps) => {
   if (order.items.length === 0) {
     return (
-      <Card className="p-6 bg-card/95 backdrop-blur">
+      <div>
         <h3 className="text-2xl font-bold mb-4 text-primary">Your Order</h3>
         <p className="text-muted-foreground">No items yet</p>
         <div className="mt-4 pt-4 border-t">
@@ -31,12 +32,12 @@ export const OrderDisplay = ({ order, onRemoveItem }: OrderDisplayProps) => {
             <span className="text-primary">$0.00</span>
           </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="p-6 bg-card/95 backdrop-blur max-h-[80vh] overflow-y-auto">
+    <div className="flex flex-col h-full">
       <h3 className="text-2xl font-bold mb-4 text-primary">Your Order</h3>
       
       <div className="space-y-4">
@@ -83,16 +84,26 @@ export const OrderDisplay = ({ order, onRemoveItem }: OrderDisplayProps) => {
 
       <Separator className="my-4" />
       
-      <div className="space-y-2">
-        <div className="flex justify-between text-lg">
-          <span className="text-muted-foreground">Items:</span>
-          <span>{order.items.length}</span>
+      <div className="space-y-4 mt-auto">
+        <div className="space-y-2">
+          <div className="flex justify-between text-lg">
+            <span className="text-muted-foreground">Items:</span>
+            <span>{order.items.length}</span>
+          </div>
+          <div className="flex justify-between text-2xl font-bold">
+            <span>Total:</span>
+            <span className="text-primary">$--.--</span>
+          </div>
         </div>
-        <div className="flex justify-between text-2xl font-bold">
-          <span>Total:</span>
-          <span className="text-primary">$--.--</span>
-        </div>
+        
+        <Button 
+          onClick={onCheckout} 
+          className="w-full"
+          size="lg"
+        >
+          Proceed to Payment
+        </Button>
       </div>
-    </Card>
+    </div>
   );
 };
