@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, Plus, Minus } from "lucide-react";
 
 
 interface ItemSelectionProps {
@@ -24,28 +24,32 @@ export const ItemSelection = ({
   onContinue,
   allowDuplicates = true,
 }: ItemSelectionProps) => {
+  // Determine if we should show +/- buttons (for multi-select with duplicates)
+  const showCounterButtons = allowDuplicates && maxSelection > 1;
+
   const toggleItem = (item: { id: string; name: string; price: number }) => {
     const count = getItemCount(item.id);
     
-    if (allowDuplicates) {
-      // For entrees: clicking adds another, or removes one if it exists
-      if (count > 0 && selectedItems.length <= maxSelection) {
-        // Remove one instance
-        const index = selectedItems.findIndex((i) => i.id === item.id);
-        const newItems = [...selectedItems];
-        newItems.splice(index, 1);
-        onSelect(newItems);
-      } else if (selectedItems.length < maxSelection) {
-        // Add one instance
-        onSelect([...selectedItems, item]);
-      }
-    } else {
-      // For sides: toggle on/off
-      if (count > 0) {
-        onSelect(selectedItems.filter((i) => i.id !== item.id));
-      } else if (selectedItems.length < maxSelection) {
-        onSelect([...selectedItems, item]);
-      }
+    // For tap-to-select items (sides or single entree)
+    if (count > 0) {
+      onSelect(selectedItems.filter((i) => i.id !== item.id));
+    } else if (selectedItems.length < maxSelection) {
+      onSelect([...selectedItems, item]);
+    }
+  };
+
+  const incrementItem = (item: { id: string; name: string; price: number }) => {
+    if (selectedItems.length < maxSelection) {
+      onSelect([...selectedItems, item]);
+    }
+  };
+
+  const decrementItem = (item: { id: string; name: string; price: number }) => {
+    const index = selectedItems.findIndex((i) => i.id === item.id);
+    if (index !== -1) {
+      const newItems = [...selectedItems];
+      newItems.splice(index, 1);
+      onSelect(newItems);
     }
   };
 
@@ -70,28 +74,51 @@ export const ItemSelection = ({
             const count = getItemCount(item.id);
             const isSelected = count > 0;
             return (
-              <Card
-                key={item.id}
-                className={`p-6 hover:shadow-lg transition-all cursor-pointer border-2 relative ${
-                  isSelected ? "border-primary bg-primary/5" : ""
-                }`}
-                onClick={() => toggleItem(item)}
-              >
-                {isSelected && (
-                  allowDuplicates ? (
-                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg">
-                      {count}
-                    </div>
-                  ) : (
+              <div key={item.id} className="flex flex-col gap-2">
+                <Card
+                  className={`p-6 hover:shadow-lg transition-all border-2 relative ${
+                    isSelected ? "border-primary bg-primary/5" : ""
+                  } ${!showCounterButtons ? "cursor-pointer" : ""}`}
+                  onClick={!showCounterButtons ? () => toggleItem(item) : undefined}
+                >
+                  {isSelected && !showCounterButtons && (
                     <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
                       <Check className="h-5 w-5" />
                     </div>
-                  )
+                  )}
+                  {showCounterButtons && count > 0 && (
+                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg">
+                      {count}
+                    </div>
+                  )}
+                  <h3 className="text-lg font-semibold text-center text-foreground">
+                    {item.name}
+                  </h3>
+                </Card>
+                
+                {showCounterButtons && (
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => decrementItem(item)}
+                      disabled={count === 0}
+                      className="h-12 w-12"
+                    >
+                      <Minus className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => incrementItem(item)}
+                      disabled={selectedItems.length >= maxSelection && count === 0}
+                      className="h-12 w-12"
+                    >
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                  </div>
                 )}
-                <h3 className="text-lg font-semibold text-center text-foreground">
-                  {item.name}
-                </h3>
-              </Card>
+              </div>
             );
           })}
         </div>
