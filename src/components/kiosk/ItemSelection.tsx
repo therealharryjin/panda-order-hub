@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
 
 
 interface ItemSelectionProps {
@@ -11,6 +12,7 @@ interface ItemSelectionProps {
   selectedItems: { id: string; name: string; price: number }[];
   onSelect: (items: { id: string; name: string; price: number }[]) => void;
   onContinue: () => void;
+  allowDuplicates?: boolean;
 }
 
 export const ItemSelection = ({
@@ -20,10 +22,30 @@ export const ItemSelection = ({
   selectedItems,
   onSelect,
   onContinue,
+  allowDuplicates = true,
 }: ItemSelectionProps) => {
   const toggleItem = (item: { id: string; name: string; price: number }) => {
-    if (selectedItems.length < maxSelection) {
-      onSelect([...selectedItems, item]);
+    const count = getItemCount(item.id);
+    
+    if (allowDuplicates) {
+      // For entrees: clicking adds another, or removes one if it exists
+      if (count > 0 && selectedItems.length <= maxSelection) {
+        // Remove one instance
+        const index = selectedItems.findIndex((i) => i.id === item.id);
+        const newItems = [...selectedItems];
+        newItems.splice(index, 1);
+        onSelect(newItems);
+      } else if (selectedItems.length < maxSelection) {
+        // Add one instance
+        onSelect([...selectedItems, item]);
+      }
+    } else {
+      // For sides: toggle on/off
+      if (count > 0) {
+        onSelect(selectedItems.filter((i) => i.id !== item.id));
+      } else if (selectedItems.length < maxSelection) {
+        onSelect([...selectedItems, item]);
+      }
     }
   };
 
@@ -46,18 +68,25 @@ export const ItemSelection = ({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {items.map((item) => {
             const count = getItemCount(item.id);
+            const isSelected = count > 0;
             return (
               <Card
                 key={item.id}
                 className={`p-6 hover:shadow-lg transition-all cursor-pointer border-2 relative ${
-                  count > 0 ? "border-primary bg-primary/5" : ""
+                  isSelected ? "border-primary bg-primary/5" : ""
                 }`}
                 onClick={() => toggleItem(item)}
               >
-                {count > 0 && (
-                  <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg">
-                    {count}
-                  </div>
+                {isSelected && (
+                  allowDuplicates ? (
+                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg">
+                      {count}
+                    </div>
+                  ) : (
+                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
+                      <Check className="h-5 w-5" />
+                    </div>
+                  )
                 )}
                 <h3 className="text-lg font-semibold text-center text-foreground">
                   {item.name}

@@ -112,6 +112,7 @@ const KioskFlow = () => {
             selectedItems={currentItem?.sides || []}
             onSelect={handleSidesSelect}
             onContinue={handleSidesContinue}
+            allowDuplicates={false}
           />
         )}
         
@@ -123,6 +124,7 @@ const KioskFlow = () => {
             selectedItems={currentItem?.entrees || []}
             onSelect={handleEntreesSelect}
             onContinue={handleEntreesContinue}
+            allowDuplicates={true}
           />
         )}
         
