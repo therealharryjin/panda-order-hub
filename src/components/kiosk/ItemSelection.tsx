@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+
 
 interface ItemSelectionProps {
   title: string;
@@ -22,16 +22,15 @@ export const ItemSelection = ({
   onContinue,
 }: ItemSelectionProps) => {
   const toggleItem = (item: { id: string; name: string; price: number }) => {
-    const isSelected = selectedItems.some((i) => i.id === item.id);
-    
-    if (isSelected) {
-      onSelect(selectedItems.filter((i) => i.id !== item.id));
-    } else if (selectedItems.length < maxSelection) {
+    if (selectedItems.length < maxSelection) {
       onSelect([...selectedItems, item]);
     }
   };
 
-  const isItemSelected = (itemId: string) => selectedItems.some((i) => i.id === itemId);
+  const getItemCount = (itemId: string) => {
+    return selectedItems.filter((i) => i.id === itemId).length;
+  };
+
   const canContinue = selectedItems.length === maxSelection;
 
   return (
@@ -46,18 +45,18 @@ export const ItemSelection = ({
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {items.map((item) => {
-            const selected = isItemSelected(item.id);
+            const count = getItemCount(item.id);
             return (
               <Card
                 key={item.id}
                 className={`p-6 hover:shadow-lg transition-all cursor-pointer border-2 relative ${
-                  selected ? "border-primary bg-primary/5" : ""
+                  count > 0 ? "border-primary bg-primary/5" : ""
                 }`}
                 onClick={() => toggleItem(item)}
               >
-                {selected && (
-                  <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
-                    <Check className="h-4 w-4" />
+                {count > 0 && (
+                  <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg">
+                    {count}
                   </div>
                 )}
                 <h3 className="text-lg font-semibold text-center text-foreground">
