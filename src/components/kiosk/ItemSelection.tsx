@@ -76,7 +76,7 @@ export const ItemSelection = ({
             return (
               <div key={item.id} className="flex flex-col gap-2">
                 <Card
-                  className={`p-6 hover:shadow-lg transition-all border-2 relative ${
+                  className={`p-6 hover:shadow-lg transition-all border-2 relative h-32 flex items-center justify-center ${
                     isSelected ? "border-primary bg-primary/5" : ""
                   } ${!showCounterButtons ? "cursor-pointer" : ""}`}
                   onClick={!showCounterButtons ? () => toggleItem(item) : undefined}
