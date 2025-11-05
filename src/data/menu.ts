@@ -37,5 +37,5 @@ export const MEAL_CONFIGS = {
   bowl: { sides: 1, entrees: 1, appetizers: 0 },
   plate: { sides: 1, entrees: 2, appetizers: 0 },
   biggerplate: { sides: 1, entrees: 3, appetizers: 0 },
-  appetizer: { sides: 0, entrees: 0, appetizers: 3 },
+  appetizer: { sides: 0, entrees: 0, appetizers: 1 },
 };

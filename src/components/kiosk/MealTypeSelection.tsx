@@ -34,7 +34,7 @@ const mealTypes = [
   {
     type: "appetizer" as MealType,
     title: "Appetizers",
-    description: "Choose 3 appetizers in 2 sizes",
+    description: "Choose 1 appetizer in 2 sizes",
     details: "Small or Large",
   },
 ];
