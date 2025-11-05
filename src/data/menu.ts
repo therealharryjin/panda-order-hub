@@ -1,4 +1,4 @@
-import { Side, Entree, Drink } from "@/types/order";
+import { Side, Entree, Drink, Appetizer } from "@/types/order";
 
 export const SIDES: Side[] = [
   { id: "white-rice", name: "White Steamed Rice", price: -1 },
@@ -26,9 +26,16 @@ export const DRINKS: Drink[] = [
   { id: "bottled-water", name: "Bottled Water", price: -1 },
 ];
 
+export const APPETIZERS: Appetizer[] = [
+  { id: "veggie-spring-roll", name: "Veggie Spring Roll", price: -1 },
+  { id: "chicken-egg-roll", name: "Chicken Egg Roll", price: -1 },
+  { id: "cream-cheese-rangoon", name: "Cream Cheese Rangoon", price: -1 },
+];
+
 export const MEAL_CONFIGS = {
-  alacarte: { sides: 0, entrees: 1 },
-  bowl: { sides: 1, entrees: 1 },
-  plate: { sides: 1, entrees: 2 },
-  biggerplate: { sides: 1, entrees: 3 },
+  alacarte: { sides: 0, entrees: 1, appetizers: 0 },
+  bowl: { sides: 1, entrees: 1, appetizers: 0 },
+  plate: { sides: 1, entrees: 2, appetizers: 0 },
+  biggerplate: { sides: 1, entrees: 3, appetizers: 0 },
+  appetizer: { sides: 0, entrees: 0, appetizers: 3 },
 };

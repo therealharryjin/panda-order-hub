@@ -23,8 +23,10 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
         type: "meal",
         mealType: currentItem.mealType,
         alacarteSize: currentItem.alacarteSize,
+        appetizerSize: currentItem.appetizerSize,
         sides: currentItem.sides || [],
         entrees: currentItem.entrees || [],
+        appetizers: currentItem.appetizers || [],
       };
       
       setOrder(prev => ({

@@ -9,15 +9,17 @@ import { OrderSummary } from "@/components/kiosk/OrderSummary";
 import { PaymentScreen } from "@/components/kiosk/PaymentScreen";
 import { ConfirmationScreen } from "@/components/kiosk/ConfirmationScreen";
 import { OrderDisplay } from "@/components/kiosk/OrderDisplay";
-import { SIDES, ENTREES, MEAL_CONFIGS } from "@/data/menu";
-import { MealType, AlaCarteSize, Side, Entree, Drink } from "@/types/order";
+import { SIDES, ENTREES, APPETIZERS, MEAL_CONFIGS } from "@/data/menu";
+import { MealType, AlaCarteSize, AppetizerSize, Side, Entree, Drink, Appetizer } from "@/types/order";
 
 type Step = 
   | "welcome" 
   | "mealType" 
   | "size" 
+  | "appetizerSize"
   | "sides" 
   | "entrees" 
+  | "appetizers"
   | "drinks" 
   | "summary"
   | "payment"
@@ -28,10 +30,12 @@ const KioskFlow = () => {
   const { currentItem, setCurrentItem, addMealToOrder, addDrinkToOrder, removeItem, order, clearOrder } = useOrder();
 
   const handleMealTypeSelect = (mealType: MealType) => {
-    setCurrentItem({ type: "meal", mealType, sides: [], entrees: [] });
+    setCurrentItem({ type: "meal", mealType, sides: [], entrees: [], appetizers: [] });
     
     if (mealType === "alacarte") {
       setStep("size");
+    } else if (mealType === "appetizer") {
+      setStep("appetizerSize");
     } else if (MEAL_CONFIGS[mealType].sides > 0) {
       setStep("sides");
     } else {
@@ -42,6 +46,11 @@ const KioskFlow = () => {
   const handleSizeSelect = (size: AlaCarteSize) => {
     setCurrentItem({ ...currentItem, alacarteSize: size });
     setStep("entrees");
+  };
+
+  const handleAppetizerSizeSelect = (size: AppetizerSize) => {
+    setCurrentItem({ ...currentItem, appetizerSize: size });
+    setStep("appetizers");
   };
 
   const handleSidesSelect = (sides: Side[]) => {
@@ -57,6 +66,15 @@ const KioskFlow = () => {
   };
 
   const handleEntreesContinue = () => {
+    addMealToOrder();
+    setStep("mealType");
+  };
+
+  const handleAppetizersSelect = (appetizers: Appetizer[]) => {
+    setCurrentItem({ ...currentItem, appetizers });
+  };
+
+  const handleAppetizersContinue = () => {
     addMealToOrder();
     setStep("mealType");
   };
@@ -84,7 +102,7 @@ const KioskFlow = () => {
   };
 
   const getMealConfig = () => {
-    if (!currentItem?.mealType) return { sides: 0, entrees: 0 };
+    if (!currentItem?.mealType) return { sides: 0, entrees: 0, appetizers: 0 };
     return MEAL_CONFIGS[currentItem.mealType];
   };
 
@@ -102,7 +120,9 @@ const KioskFlow = () => {
           />
         )}
         
-        {step === "size" && <SizeSelection onSelect={handleSizeSelect} />}
+        {step === "size" && <SizeSelection onSelect={handleSizeSelect} type="alacarte" />}
+        
+        {step === "appetizerSize" && <SizeSelection onSelect={handleAppetizerSizeSelect} type="appetizer" />}
         
         {step === "sides" && (
           <ItemSelection
@@ -124,6 +144,18 @@ const KioskFlow = () => {
             selectedItems={currentItem?.entrees || []}
             onSelect={handleEntreesSelect}
             onContinue={handleEntreesContinue}
+            allowDuplicates={true}
+          />
+        )}
+        
+        {step === "appetizers" && (
+          <ItemSelection
+            title="Choose Your Appetizers"
+            items={APPETIZERS}
+            maxSelection={getMealConfig().appetizers}
+            selectedItems={currentItem?.appetizers || []}
+            onSelect={handleAppetizersSelect}
+            onContinue={handleAppetizersContinue}
             allowDuplicates={true}
           />
         )}

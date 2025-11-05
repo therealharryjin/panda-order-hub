@@ -10,9 +10,12 @@ interface OrderDisplayProps {
   onCheckout: () => void;
 }
 
-const getMealTypeLabel = (mealType: string, alacarteSize?: string) => {
+const getMealTypeLabel = (mealType: string, alacarteSize?: string, appetizerSize?: string) => {
   if (mealType === "alacarte") {
     return `A La Carte (${alacarteSize})`;
+  }
+  if (mealType === "appetizer") {
+    return `Appetizers (${appetizerSize})`;
   }
   if (mealType === "bowl") return "Bowl";
   if (mealType === "plate") return "Plate";
@@ -50,7 +53,7 @@ export const OrderDisplay = ({ order, onRemoveItem, onCheckout }: OrderDisplayPr
                 {item.type === "meal" ? (
                   <>
                     <h4 className="font-bold text-foreground">
-                      {getMealTypeLabel(item.mealType, item.alacarteSize)}
+                      {getMealTypeLabel(item.mealType, item.alacarteSize, item.appetizerSize)}
                     </h4>
                     {item.sides.length > 0 && (
                       <p className="text-sm text-muted-foreground">
@@ -60,6 +63,11 @@ export const OrderDisplay = ({ order, onRemoveItem, onCheckout }: OrderDisplayPr
                     {item.entrees.length > 0 && (
                       <p className="text-sm text-muted-foreground">
                         {item.entrees.length > 1 ? "Entrees" : "Entree"}: {item.entrees.map(e => e.name).join(", ")}
+                      </p>
+                    )}
+                    {item.appetizers && item.appetizers.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        Appetizers: {item.appetizers.map(a => a.name).join(", ")}
                       </p>
                     )}
                   </>

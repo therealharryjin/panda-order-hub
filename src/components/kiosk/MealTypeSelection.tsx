@@ -31,6 +31,12 @@ const mealTypes = [
     description: "1 Side & 3 Entrees",
     details: "Maximum flavor",
   },
+  {
+    type: "appetizer" as MealType,
+    title: "Appetizers",
+    description: "Choose 3 appetizers in 2 sizes",
+    details: "Small or Large",
+  },
 ];
 
 export const MealTypeSelection = ({ onSelect, onSelectDrinks }: MealTypeSelectionProps) => {

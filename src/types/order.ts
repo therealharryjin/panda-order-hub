@@ -1,5 +1,6 @@
-export type MealType = "alacarte" | "bowl" | "plate" | "biggerplate";
+export type MealType = "alacarte" | "bowl" | "plate" | "biggerplate" | "appetizer";
 export type AlaCarteSize = "small" | "medium" | "large";
+export type AppetizerSize = "small" | "large";
 
 export interface MenuItem {
   id: string;
@@ -11,12 +12,16 @@ export interface Side extends MenuItem {}
 export interface Entree extends MenuItem {}
 export interface Drink extends MenuItem {}
 
+export interface Appetizer extends MenuItem {}
+
 export interface MealOrderItem {
   type: "meal";
   mealType: MealType;
   alacarteSize?: AlaCarteSize;
+  appetizerSize?: AppetizerSize;
   sides: Side[];
   entrees: Entree[];
+  appetizers?: Appetizer[];
 }
 
 export interface DrinkOrderItem {
