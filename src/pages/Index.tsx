@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { OrderProvider, useOrder } from "@/components/OrderContext";
+import { MenuProvider, useMenu } from "@/components/MenuContext";
 import { WelcomeScreen } from "@/components/kiosk/WelcomeScreen";
 import { MealTypeSelection } from "@/components/kiosk/MealTypeSelection";
 import { SizeSelection } from "@/components/kiosk/SizeSelection";
@@ -9,7 +10,7 @@ import { OrderSummary } from "@/components/kiosk/OrderSummary";
 import { PaymentScreen } from "@/components/kiosk/PaymentScreen";
 import { ConfirmationScreen } from "@/components/kiosk/ConfirmationScreen";
 import { OrderDisplay } from "@/components/kiosk/OrderDisplay";
-import { SIDES, ENTREES, APPETIZERS, MEAL_CONFIGS } from "@/data/menu";
+import { MEAL_CONFIGS } from "@/data/menu";
 import { MealType, AlaCarteSize, AppetizerSize, Side, Entree, Drink, Appetizer } from "@/types/order";
 
 type Step = 
@@ -28,6 +29,35 @@ type Step =
 const KioskFlow = () => {
   const [step, setStep] = useState<Step>("welcome");
   const { currentItem, setCurrentItem, addMealToOrder, addDrinkToOrder, removeItem, order, clearOrder } = useOrder();
+  const { sides, entrees, drinks, appetizers, isLoading, error } = useMenu();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl font-bold text-primary mb-4">Loading Menu...</div>
+          <div className="text-muted-foreground">Please wait</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl font-bold text-destructive mb-4">Error Loading Menu</div>
+          <div className="text-muted-foreground">{error.message}</div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleMealTypeSelect = (mealType: MealType) => {
     setCurrentItem({ type: "meal", mealType, sides: [], entrees: [], appetizers: [] });
@@ -127,7 +157,7 @@ const KioskFlow = () => {
         {step === "sides" && (
           <ItemSelection
             title="Choose Your Side"
-            items={SIDES}
+            items={sides}
             maxSelection={getMealConfig().sides}
             selectedItems={currentItem?.sides || []}
             onSelect={handleSidesSelect}
@@ -139,7 +169,7 @@ const KioskFlow = () => {
         {step === "entrees" && (
           <ItemSelection
             title={getMealConfig().entrees > 1 ? "Choose Your Entrees" : "Choose Your Entree"}
-            items={ENTREES}
+            items={entrees}
             maxSelection={getMealConfig().entrees}
             selectedItems={currentItem?.entrees || []}
             onSelect={handleEntreesSelect}
@@ -151,7 +181,7 @@ const KioskFlow = () => {
         {step === "appetizers" && (
           <ItemSelection
             title="Choose Your Appetizers"
-            items={APPETIZERS}
+            items={appetizers}
             maxSelection={getMealConfig().appetizers}
             selectedItems={currentItem?.appetizers || []}
             onSelect={handleAppetizersSelect}
@@ -183,9 +213,11 @@ const KioskFlow = () => {
 
 const Index = () => {
   return (
-    <OrderProvider>
-      <KioskFlow />
-    </OrderProvider>
+    <MenuProvider>
+      <OrderProvider>
+        <KioskFlow />
+      </OrderProvider>
+    </MenuProvider>
   );
 };
 
